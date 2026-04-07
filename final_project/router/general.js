@@ -84,17 +84,31 @@ public_users.get('/author/:author',function (req, res) {
   res.send(bookbyauth);
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  let bookbytitle = [];
-  let title = req.params.title;
-  let keys = Object.keys(books);
-  keys.forEach( key => {
-    if(books[key].title === title) {
-      bookbytitle.push(books[key]);
-    }
-  });
-  res.send(bookbytitle);
+public_users.get('/author/:author', async function (req, res) {
+  const author = req.params.author;
+
+  try {
+    const getBooksByAuthor = () => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const filtered_books = Object.values(books).filter(
+            (book) => book.author.toLowerCase() === author.toLowerCase()
+          );
+
+          if (filtered_books.length > 0) {
+            resolve(filtered_books);
+          } else {
+            reject("No books found for this author");
+          }
+        }, 100);
+      });
+    };
+
+    const result = await getBooksByAuthor();
+    res.status(200).send(JSON.stringify(result, null, 4));
+  } catch (error) {
+    res.status(404).json({ message: error });
+  }
 });
 
 //  Get book review
