@@ -38,8 +38,7 @@ regd_users.post("/login", (req,res) => {
     },"access",{'expiresIn': 60*60})
 
     req.session.authorization = {accessToken , username};
-    res.status(200).json({message : "User logged in successfully"});
-
+res.status(200).json({message: "Customer successfully logged in"});
   }
   else {
     res.status(208).json({message: "invalid login credentials"})
@@ -56,13 +55,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   if (books[isbn]) {
       let book = books[isbn];
       book.reviews[username] = review;
-      return res.status(200).send(`The review for the book with ISBN ${isbn} has been added/updated.`);
+      return res.status(200).json({message:`The review for the book with ISBN ${isbn} has been added/updated.`});
   } else {
       return res.status(404).json({ message: `Book with ISBN ${isbn} not found` });
   }
 });
 
-regd_users.delete("/auth/review/:isbn", (req, res) => {
+regd_users.delete("/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
   let username = req.session.authorization['username'];
 
@@ -70,7 +69,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
       let book = books[isbn];
       if (book.reviews[username]) {
           delete book.reviews[username];
-          return res.status(200).send(`Reviews for the ISBN ${isbn} posted by user ${username} deleted.`);
+          res.status(200).json({message: "Review for the ISBN " + isbn + " posted by user " + username + " deleted."});
       } else {
           return res.status(404).json({ message: "No review found for this user on this book" });
       }

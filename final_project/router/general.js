@@ -18,7 +18,7 @@ public_users.post("/register", (req,res) => {
         users.push({"username" : username ,
       "password" : password
     });
-      res.status(200).json({message : "user added"})
+      res.status(200).json({message: "Customer successfully registered"});
   }
   }
   else {
@@ -70,31 +70,24 @@ public_users.get('/isbn/:isbn',async function (req, res) {
 };
 });
   
-// Get book details based on author
 public_users.get('/author/:author', async function (req, res) {
   const author = req.params.author;
-
   try {
     const getBooksByAuthor = () => {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const filtered_books = Object.values(books).filter(
-            (book) => book.author.toLowerCase() === author.toLowerCase()
-          );
-
-          if (filtered_books.length > 0) {
-            resolve(filtered_books);
-          } else {
-            reject("No books found for this author");
+      return new Promise((resolve) => {
+        let filtered = [];
+        for (const [isbn, details] of Object.entries(books)) {
+          if (details.author.toLowerCase() === author.toLowerCase()) {
+            filtered.push({ isbn, ...details }); 
           }
-        }, 100);
+        }
+        resolve(filtered);
       });
     };
-
     const result = await getBooksByAuthor();
     res.status(200).send(JSON.stringify(result, null, 4));
   } catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: "No books found" });
   }
 });
 
